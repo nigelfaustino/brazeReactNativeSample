@@ -21,8 +21,12 @@ import {
   Alert,
   TextInput,
   Platform,
-  DeviceEventEmitter
+  DeviceEventEmitter,
 } from 'react-native';
+
+import { useEffect } from "react";
+
+import ReactAppboy from "react-native-appboy-sdk";
 
 import {
   Colors,
@@ -64,6 +68,10 @@ const App: () => Node = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+
+  useEffect(() => {
+    ReactAppboy.changeUser("some-user-id");
+  }, []);
 
   return (
     <SafeAreaView style={backgroundStyle}>
