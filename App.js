@@ -6,7 +6,7 @@
  * @flow strict-local
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import type {Node} from 'react';
 import {
   SafeAreaView,
@@ -22,11 +22,13 @@ import {
   TextInput,
   Platform,
   DeviceEventEmitter,
+  Button,
 } from 'react-native';
 
 import { useEffect } from "react";
 
 import ReactAppboy from "react-native-appboy-sdk";
+import Braze from "react-native-appboy-sdk";
 
 import {
   Colors,
@@ -68,51 +70,60 @@ const App: () => Node = () => {
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
+  const [text, setText] = useState('');
 
-  useEffect(() => {
-    ReactAppboy.changeUser("some-user-id");
-  }, []);
+
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView
+    style={backgroundStyle}
+>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
         <View
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Set Custom Attribute">
+          <Section title="Set User Id">
           <View>
             <TextInput
               style={styles.textInput}
-              // value={this.state.userIdText}
+              placeholder="Type here to translate!"
+              onChangeText={newText => setText(newText)}
+              defaultValue={text}
             />
-            <TouchableHighlight>
-              <Text>Set User ID</Text>
-            </TouchableHighlight>
+            <Button
+              title= "Set User ID"
+              onPress={() => Braze.changeUser(text)}
+            />
+            <Button
+              title="Set Custom Event"
+              color="#f194ff"
+              onPress={() => Braze.logCustomEvent(text)}
+            />
+            <Button
+              title="Set Custom Attribute"
+              color="#f194ff"
+              onPress={() => Braze.setCustomUserAttribute('customAttribute',text)}
+            />
+            <Button
+              title="Trigger IAM"
+              onPress={() => Braze.logCustomEvent("triggerEvent")}
+              />
+            <Button
+              title="Launch ContentCards"
+              onPress={() => Braze.launchContentCards()}
+            />
             </View>
           </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   sectionContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
     marginTop: 32,
     paddingHorizontal: 24,
   },
