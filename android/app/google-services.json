@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "684480564190",
+    "project_id": "reactbraze",
+    "storage_bucket": "reactbraze.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684480564190:android:6c6c98807dd3b7b79feb4f",
+        "android_client_info": {
+          "package_name": "com.brazereactnativesample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684480564190-3dnop8kiuv1veel56lgbtssfek9fe851.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCebmFqiCDvylLs-GGQhy6dnz4C2zBOx0c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684480564190-3dnop8kiuv1veel56lgbtssfek9fe851.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

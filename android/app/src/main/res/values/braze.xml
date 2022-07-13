@@ -2,4 +2,7 @@
 <resources>
     <string name="com_braze_api_key">c1c68637-d979-43c9-8737-1dbb5a2e159d</string>
     <string translatable="false" name="com_braze_custom_endpoint">sondheim.braze.com</string>
+    <bool translatable="false" name="com_braze_firebase_cloud_messaging_registration_enabled">true</bool>
+    <string translatable="false" name="com_braze_firebase_cloud_messaging_sender_id">684480564190</string>
+
 </resources>

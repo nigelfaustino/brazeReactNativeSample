@@ -1,5 +1,6 @@
 apply plugin: "com.android.application"
 
+apply plugin: 'com.google.gms.google-services'
 import com.android.build.OutputFile
 
 /**
@@ -257,7 +258,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-
+    implementation platform('com.google.firebase:firebase-bom:30.2.0')
+    implementation "com.google.firebase:firebase-messaging:23.0.6"
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
 
