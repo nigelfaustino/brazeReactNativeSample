@@ -6,6 +6,8 @@
 
 #import <React/RCTAppSetupUtils.h>
 #import "Appboy-iOS-SDK/AppboyKit.h"
+#import "Appboy-iOS-SDK/ABKPushUtils.h"
+
 
 #if RCT_NEW_ARCH_ENABLED
 #import <React/CoreModulesPlugins.h>
@@ -15,10 +17,14 @@
 #import <React/RCTSurfacePresenterBridgeAdapter.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <react/config/ReactNativeConfig.h>
+#import <UserNotifications/UserNotifications.h>
+
+@synthesize bridge;
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate> {
+@interface AppDelegate () <RCTCxxBridgeDelegate, RCTTurboModuleManagerDelegate, UNUserNotificationCenterDelegate,
+  UIApplicationDelegate> {
   RCTTurboModuleManager *_turboModuleManager;
   RCTSurfacePresenterBridgeAdapter *_bridgeAdapter;
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
@@ -60,9 +66,53 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   [Appboy startWithApiKey:@"44b60ec2-2934-4e06-988d-457d1d9887c9"
            inApplication:application
        withLaunchOptions:launchOptions];
+  if (floor(NSFoundationVersionNumber) > NSFoundationVersionNumber_iOS_9_x_Max) {
+    UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+    UNAuthorizationOptions options = UNAuthorizationOptionAlert | UNAuthorizationOptionSound | UNAuthorizationOptionBadge;
+    if (@available(iOS 12.0, *)) {
+    options = options | UNAuthorizationOptionProvisional;
+    }
+    [center requestAuthorizationWithOptions:options
+                          completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                            [[Appboy sharedInstance] pushAuthorizationFromUserNotificationCenter:granted];
+      center.delegate = self;
+    }];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+  } else {
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge | UIUserNotificationTypeAlert | UIUserNotificationTypeSound) categories:nil];
+    [[UIApplication sharedApplication] registerForRemoteNotifications];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+  }
+
 
   return YES;
 }
+
+# pragma mark - UNUserNotificationCenterDelegate
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center
+       willPresentNotification:(UNNotification *)notification
+         withCompletionHandler:(void (^)(UNNotificationPresentationOptions options))completionHandler {
+  if (@available(iOS 14.0, *)) {
+    completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
+  } else {
+    completionHandler(UNNotificationPresentationOptionAlert);
+  }
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+  [[Appboy sharedInstance] userNotificationCenter:center didReceiveNotificationResponse:response withCompletionHandler:completionHandler];
+  
+  if ([ABKPushUtils isAppboyUserNotification:response]) {
+    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+  }
+}
+
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+  [[Appboy sharedInstance] registerApplication:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:completionHandler];
+}
+
+
 
 /// This method controls whether the `concurrentRoot`feature of React18 is turned on or off.
 ///

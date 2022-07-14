@@ -83,7 +83,7 @@ const App: () => Node = () => {
           style={{
             backgroundColor: isDarkMode ? Colors.black : Colors.white,
           }}>
-          <Section title="Set User Id">
+          <Section title="Basic Braze Functions">
           <View>
             <TextInput
               style={styles.textInput}
